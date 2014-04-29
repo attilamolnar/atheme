@@ -286,7 +286,7 @@ static void sasl_packet(sasl_session_t *p, char *buf, int len)
 		if(!(p->mechptr = find_mechanism(mech)))
 		{
 			char temp[400], *ptr = temp;
-			int l = 0;
+			int l = 1;
 			mowgli_node_t *n;
 
 			MOWGLI_ITER_FOREACH(n, sasl_mechanisms.head)
@@ -300,7 +300,7 @@ static void sasl_packet(sasl_session_t *p, char *buf, int len)
 				l += strlen(mptr->name) + 1;
 			}
 
-			if(l)
+			if(l > 1)
 				ptr--;
 			*ptr = '\0';
 
