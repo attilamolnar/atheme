@@ -106,9 +106,10 @@ struct connection_
 extern connection_t *connection_add(const char *, int, unsigned int,
 	void(*)(connection_t *),
 	void(*)(connection_t *));
-extern connection_t *connection_open_tcp(char *, char *, unsigned int,
+extern connection_t *connection_open_tcp_ssl(char *, char *, unsigned int,
 	void(*)(connection_t *),
-	void(*)(connection_t *));
+	void(*)(connection_t *),
+	connection_ssl_handlers_t *sslhandlers);
 extern connection_t *connection_open_listener_tcp(char *, unsigned int,
 	void(*)(connection_t *));
 extern connection_t *connection_accept_tcp(connection_t *,

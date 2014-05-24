@@ -362,11 +362,12 @@ void connection_close_all_fds(void)
 }
 
 /*
- * connection_open_tcp()
+ * connection_open_tcp_ssl()
  *
  * inputs:
  *       hostname to connect to, vhost to use, port,
- *       read handler, write handler
+ *       read handler, write handler,
+ *       ssl handler functions or NULL if connection is non-SSL
  *
  * outputs:
  *       the connection_t on success, NULL on failure.
@@ -375,9 +376,10 @@ void connection_close_all_fds(void)
  *       a TCP/IP connection is opened to the host,
  *       and interest is registered in read/write events.
  */
-connection_t *connection_open_tcp(char *host, char *vhost, unsigned int port,
+connection_t *connection_open_tcp_ssl(char *host, char *vhost, unsigned int port,
 	void (*read_handler)(connection_t *),
-	void (*write_handler)(connection_t *))
+	void (*write_handler)(connection_t *),
+	connection_ssl_handlers_t *sslhandlers)
 {
 	connection_t *cptr;
 	char buf[BUFSIZE];
