@@ -30,10 +30,14 @@ union sockaddr_any_
 
 #include "res.h"
 
+struct connection_;
+
+
 typedef struct connection_ssl_handlers_ connection_ssl_handlers_t;
 
 struct connection_ssl_handlers_
 {
+	bool (*handshake_done_handler)(struct connection_ *cptr);
 };
 
 

@@ -67,6 +67,17 @@ static bool connection_ssl_handshake(connection_t *cptr)
 	{
 		ssl->handshake_done = true;
 		slog(LG_INFO, "connection_ssl_handshake(): handshake successful, ciphersuite: %s", ssl_get_ciphersuite(ssl->session));
+
+		if (ssl->handlers.handshake_done_handler)
+		{
+			if (!ssl->handlers.handshake_done_handler(cptr))
+			{
+				slog(LG_INFO, "connection_ssl_handshake(): post-handshake handler failed");
+				connection_close(cptr);
+				return false;
+			}
+		}
+
 		return true;
 	}
 	else if (ret < 0)
