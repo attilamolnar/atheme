@@ -30,6 +30,21 @@ union sockaddr_any_
 
 #include "res.h"
 
+typedef struct connection_ssl_handlers_ connection_ssl_handlers_t;
+
+struct connection_ssl_handlers_
+{
+};
+
+
+typedef struct connection_ssl_data_ connection_ssl_data_t;
+
+struct connection_ssl_data_
+{
+	connection_ssl_handlers_t handlers;
+};
+
+
 typedef struct connection_ connection_t;
 
 struct connection_
@@ -63,6 +78,8 @@ struct connection_
 	void *userdata;
 
 	mowgli_eventloop_pollable_t *pollable;
+
+	connection_ssl_data_t ssl;
 };
 
 #define CF_UPLINK     0x00000001
