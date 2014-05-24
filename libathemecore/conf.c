@@ -386,7 +386,7 @@ static int c_uplink(mowgli_config_file_entry_t *ce)
 		}
 	}
 
-	uplink_add(name, host, send_password, receive_password, vhost, port, uses_ssl);
+	uplink_add(name, host, send_password, receive_password, vhost, port, uses_ssl, ssl_fingerprint);
 	return 0;
 }
 

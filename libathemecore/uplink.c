@@ -44,7 +44,7 @@ void init_uplinks(void)
 	}
 }
 
-uplink_t *uplink_add(const char *name, const char *host, const char *send_password, const char *receive_password, const char *vhost, int port, bool uses_ssl)
+uplink_t *uplink_add(const char *name, const char *host, const char *send_password, const char *receive_password, const char *vhost, int port, bool uses_ssl, const char *ssl_fingerprint)
 {
 	uplink_t *u;
 
@@ -61,6 +61,8 @@ uplink_t *uplink_add(const char *name, const char *host, const char *send_passwo
 			free(u->receive_pass);
 			if (u->vhost)
 				free(u->vhost);
+			if (u->ssl_fingerprint)
+				free(u->ssl_fingerprint);
 		}
 		else
 		{
@@ -83,6 +85,8 @@ uplink_t *uplink_add(const char *name, const char *host, const char *send_passwo
 		u->vhost = sstrdup(vhost);
 	u->port = port;
 	u->ssl = uses_ssl;
+	if (ssl_fingerprint)
+		u->ssl_fingerprint = sstrdup(ssl_fingerprint);
 
 	return u;
 }
@@ -95,6 +99,8 @@ void uplink_delete(uplink_t * u)
 	free(u->receive_pass);
 	if (u->vhost)
 		free(u->vhost);
+	if (u->ssl_fingerprint)
+		free(u->ssl_fingerprint);
 
 	mowgli_node_delete(&u->node, &uplinks);
 	mowgli_heap_free(uplink_heap, u);
