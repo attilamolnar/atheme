@@ -959,6 +959,10 @@ uplink "irc.example.net" {
 	// port
 	// The port to connect to.
 	port = 6667;
+	
+	// ssl
+	// Whether or not use SSL/TLS when connecting to this uplink.
+	#ssl;
 };
 
 /* this is an example for using an IPv6 address as an uplink */

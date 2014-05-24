@@ -44,7 +44,7 @@ void init_uplinks(void)
 	}
 }
 
-uplink_t *uplink_add(const char *name, const char *host, const char *send_password, const char *receive_password, const char *vhost, int port)
+uplink_t *uplink_add(const char *name, const char *host, const char *send_password, const char *receive_password, const char *vhost, int port, bool uses_ssl)
 {
 	uplink_t *u;
 
@@ -82,6 +82,7 @@ uplink_t *uplink_add(const char *name, const char *host, const char *send_passwo
 	if (vhost)
 		u->vhost = sstrdup(vhost);
 	u->port = port;
+	u->ssl = uses_ssl;
 
 	return u;
 }

@@ -24,6 +24,8 @@ struct uplink_
 
 	unsigned int port;
 
+	bool ssl;
+
 	connection_t *conn;
 
 	unsigned int flags;
@@ -36,7 +38,7 @@ E mowgli_list_t uplinks;
 E uplink_t *curr_uplink;
 
 E void init_uplinks(void);
-E uplink_t *uplink_add(const char *name, const char *host, const char *send_password, const char *receive_password, const char *vhost, int port);
+E uplink_t *uplink_add(const char *name, const char *host, const char *send_password, const char *receive_password, const char *vhost, int port, bool uses_ssl);
 E void uplink_delete(uplink_t *u);
 E uplink_t *uplink_find(const char *name);
 E void uplink_connect(void);

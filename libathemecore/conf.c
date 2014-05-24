@@ -290,6 +290,7 @@ static int c_uplink(mowgli_config_file_entry_t *ce)
 	char *name;
 	char *host = NULL, *vhost = NULL, *send_password = NULL, *receive_password = NULL;
 	unsigned int port = 0;
+	bool uses_ssl = false;
 
 	if (ce->vardata == NULL)
 	{
@@ -363,6 +364,10 @@ static int c_uplink(mowgli_config_file_entry_t *ce)
 		{
 			(void)process_uint_configentry(ce, &port, 1, 65535);
 		}
+		else if (!strcasecmp("SSL", ce->varname))
+		{
+			uses_ssl = true;
+		}
 		else
 		{
 			conf_report_warning(ce, "Invalid configuration option");
@@ -370,7 +375,7 @@ static int c_uplink(mowgli_config_file_entry_t *ce)
 		}
 	}
 
-	uplink_add(name, host, send_password, receive_password, vhost, port);
+	uplink_add(name, host, send_password, receive_password, vhost, port, uses_ssl);
 	return 0;
 }
 
