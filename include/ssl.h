@@ -25,3 +25,5 @@ E void ssl_session_deinit(ssl_session_t session);
 E int ssl_handshake(ssl_session_t session);
 E int ssl_send(ssl_session_t session, const void *buffer, size_t size);
 E int ssl_recv(ssl_session_t session, void *buffer, size_t size);
+
+E const char *ssl_get_ciphersuite(ssl_session_t session);

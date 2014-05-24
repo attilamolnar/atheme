@@ -122,3 +122,13 @@ int ssl_recv(ssl_session_t session, void *buffer, size_t size)
 	return -1;
 #endif
 }
+
+const char *ssl_get_ciphersuite(ssl_session_t session)
+{
+#ifdef ATHEME_USE_OPENSSL
+	return SSL_get_cipher(session);
+#else
+	soft_assert(0);
+	return "SSL unavailable";
+#endif
+}

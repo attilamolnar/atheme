@@ -66,6 +66,7 @@ static bool connection_ssl_handshake(connection_t *cptr)
 	if (ret > 0)
 	{
 		ssl->handshake_done = true;
+		slog(LG_INFO, "connection_ssl_handshake(): handshake successful, ciphersuite: %s", ssl_get_ciphersuite(ssl->session));
 		return true;
 	}
 	else if (ret < 0)
