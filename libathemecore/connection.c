@@ -54,6 +54,28 @@ static int socket_setnonblocking(mowgli_descriptor_t sck)
 #endif
 }
 
+static bool connection_ssl_handshake(connection_t *cptr)
+{
+	connection_ssl_data_t *ssl = &cptr->ssl;
+	int ret;
+
+	if (!ssl->session || ssl->handshake_done)
+		return true;
+
+	ret = ssl_handshake(ssl->session);
+	if (ret > 0)
+	{
+		ssl->handshake_done = true;
+		return true;
+	}
+	else if (ret < 0)
+	{
+		connection_close(cptr);
+	}
+
+	return false;
+}
+
 /*
  * connection_trampoline()
  *
@@ -73,6 +95,9 @@ static void connection_trampoline(mowgli_eventloop_t *eventloop, mowgli_eventloo
 	mowgli_eventloop_io_dir_t dir, void *userdata)
 {
 	connection_t *cptr = userdata;
+
+	if (!connection_ssl_handshake(cptr))
+		return;
 
 	switch (dir) {
 	case MOWGLI_EVENTLOOP_IO_READ:

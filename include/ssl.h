@@ -22,3 +22,4 @@ typedef void* ssl_session_t;
 E void ssl_init();
 E ssl_session_t ssl_session_init_client(int fd);
 E void ssl_session_deinit(ssl_session_t session);
+E int ssl_handshake(ssl_session_t session);

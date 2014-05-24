@@ -44,6 +44,7 @@ struct connection_ssl_data_
 	connection_ssl_handlers_t handlers;
 
 	ssl_session_t session;
+	bool handshake_done;
 };
 
 

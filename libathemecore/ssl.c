@@ -65,3 +65,40 @@ void ssl_session_deinit(ssl_session_t session)
 	soft_assert(0);
 #endif
 }
+
+int ssl_handshake(ssl_session_t session)
+{
+#ifdef ATHEME_USE_OPENSSL
+	int ret;
+	int sslerr;
+
+	ret = SSL_connect(session);
+	if (ret > 0)
+	{
+		/* Handshake was successfully completed, we may begin sending and receiving data
+		 */
+		return 1;
+	}
+	else if (ret < 0)
+	{
+		/* Handshake wasn't successful this time, see why.
+		 * If the error is SSL_ERROR_WANT_READ/SSL_ERROR_WANT_WRITE then we need to
+		 * retry the handshake again later, otherwise it's a fatal error.
+		 */
+		sslerr = SSL_get_error(session, ret);
+		if (sslerr == SSL_ERROR_WANT_READ || sslerr == SSL_ERROR_WANT_WRITE)
+			return 0;
+
+		return -1;
+	}
+	else
+	{
+		/* Handshake wasn't successful because we got a closure alert
+		 */
+		return -1;
+	}
+#else
+	soft_assert(0);
+	return -1;
+#endif
+}
