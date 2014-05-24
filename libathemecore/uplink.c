@@ -33,6 +33,7 @@ uplink_t *curr_uplink;
 mowgli_heap_t *uplink_heap;
 
 static void uplink_close(connection_t *cptr);
+static bool uplink_ssl_handshake_done_handler(connection_t *cptr);
 
 void init_uplinks(void)
 {
@@ -136,6 +137,8 @@ void uplink_connect(void)
 	uplink_t *u;
 	connection_ssl_handlers_t sslhandlers;
 
+	sslhandlers.handshake_done_handler = uplink_ssl_handshake_done_handler;
+
 	if (curr_uplink == NULL)
 	{
 		if (uplinks.head == NULL)
@@ -225,6 +228,34 @@ static void uplink_close(connection_t *cptr)
 	/* this leaves me.me and all users on it (i.e. services) */
 
 	slog(LG_DEBUG, "uplink_close(): ------------------------- done -------------------------");
+}
+
+static bool uplink_ssl_handshake_done_handler(connection_t *cptr)
+{
+	const char* hexfingerprint;
+
+	/* no fingerprint configured? nothing to check */
+	if (!curr_uplink->ssl_fingerprint)
+		return true;
+
+	hexfingerprint = ssl_get_cert_fingerprint(cptr->ssl.session, SSL_CERT_FINGERPRINT_SHA1);
+	if (!hexfingerprint)
+	{
+		slog(LG_INFO, "uplink_ssl_handshake_done_handler(): unable to get peer certificate fingerprint");
+		return false;
+	}
+
+	if (strcasecmp(hexfingerprint, curr_uplink->ssl_fingerprint))
+	{
+		slog(LG_INFO, "uplink_ssl_handshake_done_handler(): certificate fingerprint mismatch: ");
+		slog(LG_INFO, "uplink_ssl_handshake_done_handler():   wanted: %s", curr_uplink->ssl_fingerprint);
+		slog(LG_INFO, "uplink_ssl_handshake_done_handler(): received: %s", hexfingerprint);
+		return false;
+	}
+
+	slog(LG_DEBUG, "uplink_ssl_handshake_done_handler(): fingerprint matches configured: %s", hexfingerprint);
+
+	return true;
 }
 
 /* vim:cinoptions=>s,e0,n0,f0,{0,}0,^0,=s,ps,t0,c3,+s,(2s,us,)20,*30,gs,hs ts=8 sw=8 noexpandtab
