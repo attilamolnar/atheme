@@ -226,6 +226,8 @@ void atheme_init(char *execname, char *log_p)
 
 	log_open();
 	mowgli_log_set_cb(process_mowgli_log);
+
+	ssl_init();
 }
 
 void atheme_setup(void)
