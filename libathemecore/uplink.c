@@ -128,6 +128,7 @@ static void reconn(void *arg)
 void uplink_connect(void)
 {
 	uplink_t *u;
+	connection_ssl_handlers_t sslhandlers;
 
 	if (curr_uplink == NULL)
 	{
@@ -154,7 +155,7 @@ void uplink_connect(void)
 
 	u = curr_uplink;
 
-	curr_uplink->conn = connection_open_tcp(u->host, u->vhost, u->port, NULL, irc_handle_connect);
+	curr_uplink->conn = connection_open_tcp_ssl(u->host, u->vhost, u->port, NULL, irc_handle_connect, u->ssl ? &sslhandlers : NULL);
 	if (curr_uplink->conn != NULL)
 	{
 		curr_uplink->conn->close_handler = uplink_close;
