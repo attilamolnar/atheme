@@ -963,6 +963,12 @@ uplink "irc.example.net" {
 	// ssl
 	// Whether or not use SSL/TLS when connecting to this uplink.
 	#ssl;
+
+	// fingerprint
+	// The expected SHA-1 certificate fingerprint of the server.
+	// If set, the connection only succeeds if the SSL certificate of the server
+	// has this fingerprint. Only affects SSL connections.
+	#fingerprint = "5bd3a861541302484675ac63a4d437c5541d9756";
 };
 
 /* this is an example for using an IPv6 address as an uplink */

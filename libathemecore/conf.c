@@ -291,6 +291,7 @@ static int c_uplink(mowgli_config_file_entry_t *ce)
 	char *host = NULL, *vhost = NULL, *send_password = NULL, *receive_password = NULL;
 	unsigned int port = 0;
 	bool uses_ssl = false;
+	char *ssl_fingerprint = NULL;
 
 	if (ce->vardata == NULL)
 	{
@@ -367,6 +368,16 @@ static int c_uplink(mowgli_config_file_entry_t *ce)
 		else if (!strcasecmp("SSL", ce->varname))
 		{
 			uses_ssl = true;
+		}
+		else if (!strcasecmp("FINGERPRINT", ce->varname))
+		{
+			if (ce->vardata == NULL)
+			{
+				conf_report_warning(ce, "no parameter for configuration option");
+				return 0;
+			}
+
+			ssl_fingerprint = ce->vardata;
 		}
 		else
 		{
