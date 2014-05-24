@@ -102,3 +102,23 @@ int ssl_handshake(ssl_session_t session)
 	return -1;
 #endif
 }
+
+int ssl_send(ssl_session_t session, const void *buffer, size_t size)
+{
+#ifdef ATHEME_USE_OPENSSL
+	return SSL_write(session, buffer, size);
+#else
+	soft_assert(0);
+	return -1;
+#endif
+}
+
+int ssl_recv(ssl_session_t session, void *buffer, size_t size)
+{
+#ifdef ATHEME_USE_OPENSSL
+	return SSL_read(session, buffer, size);
+#else
+	soft_assert(0);
+	return -1;
+#endif
+}

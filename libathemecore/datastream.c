@@ -117,6 +117,8 @@ void sendq_flush(connection_t * cptr)
         mowgli_node_t *n, *tn;
         struct sendq *sq;
         int l;
+		size_t writesize;
+		const char* writebuffer;
 
 	return_if_fail(cptr != NULL);
 
@@ -127,7 +129,15 @@ void sendq_flush(connection_t * cptr)
                 if (sq->firstused == sq->firstfree)
                         break;
 
-                if ((l = send(cptr->fd, sq->buf + sq->firstused, sq->firstfree - sq->firstused, 0)) == -1)
+				writesize = sq->firstfree - sq->firstused;
+				writebuffer = sq->buf + sq->firstused;
+
+				if (cptr->ssl.session)
+					l = ssl_send(cptr->ssl.session, writebuffer, writesize);
+				else
+					l = send(cptr->fd, writebuffer, writesize, 0);
+
+                if (l == -1)
                 {
                         int err = ioerrno();
 
@@ -245,7 +255,11 @@ void recvq_put(connection_t *cptr)
 	}
 	errno = 0;
 
-	l = recv(cptr->fd, sq->buf + sq->firstfree, l, 0);
+	if (cptr->ssl.session)
+		l = ssl_recv(cptr->ssl.session, sq->buf + sq->firstfree, l);
+	else
+		l = recv(cptr->fd, sq->buf + sq->firstfree, l, 0);
+
 	if (l == 0 || (l < 0 && !mowgli_eventloop_ignore_errno(ioerrno())))
 	{
 		if (l == 0)
