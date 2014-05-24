@@ -19,6 +19,11 @@ typedef SSL* ssl_session_t;
 typedef void* ssl_session_t;
 #endif
 
+typedef enum
+{
+	SSL_CERT_FINGERPRINT_SHA1
+} ssl_cert_fingerprint_hash_t;
+
 E void ssl_init();
 E ssl_session_t ssl_session_init_client(int fd);
 E void ssl_session_deinit(ssl_session_t session);
@@ -27,3 +32,4 @@ E int ssl_send(ssl_session_t session, const void *buffer, size_t size);
 E int ssl_recv(ssl_session_t session, void *buffer, size_t size);
 
 E const char *ssl_get_ciphersuite(ssl_session_t session);
+E const char *ssl_get_cert_fingerprint(ssl_session_t session, ssl_cert_fingerprint_hash_t);

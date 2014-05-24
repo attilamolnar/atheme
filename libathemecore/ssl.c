@@ -132,3 +132,46 @@ const char *ssl_get_ciphersuite(ssl_session_t session)
 	return "SSL unavailable";
 #endif
 }
+
+const char *ssl_get_cert_fingerprint(ssl_session_t session, ssl_cert_fingerprint_hash_t hash)
+{
+#ifdef ATHEME_USE_OPENSSL
+	static char fingerprintstr[EVP_MAX_MD_SIZE*2+1];
+	const EVP_MD *mdalgo;
+	X509 *cert;
+	unsigned char raw[EVP_MAX_MD_SIZE];
+	unsigned int numrawbytes;
+	size_t i;
+
+	if (hash == SSL_CERT_FINGERPRINT_SHA1)
+		mdalgo = EVP_sha1();
+	else
+	{
+		slog(LG_DEBUG, "ssl_get_cert_fingerprint(): unknown hash: %d", hash);
+		return NULL;
+	}
+
+	cert = SSL_get_peer_certificate(session);
+	if (!cert)
+	{
+		slog(LG_INFO, "ssl_get_cert_fingerprint(): peer did not send a certificate");
+		return NULL;
+	}
+
+	if (!X509_digest(cert, mdalgo, raw, &numrawbytes))
+	{
+		slog(LG_DEBUG, "ssl_get_cert_fingerprint(): X509_digest() failed");
+		X509_free(cert);
+		return NULL;
+	}
+
+	for (i = 0; i < numrawbytes; i++)
+		snprintf(fingerprintstr + i*2, sizeof(fingerprintstr) - i*2, "%02x", raw[i]);
+
+	X509_free(cert);
+	return fingerprintstr;
+#else
+	soft_assert(0);
+	return NULL;
+#endif
+}
