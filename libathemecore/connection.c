@@ -227,6 +227,17 @@ void connection_close(connection_t *cptr)
 	if (cptr->close_handler)
 		cptr->close_handler(cptr);
 
+	/* shut down and free the SSL connection */
+	if (cptr->ssl.session)
+	{
+		ssl_session_deinit(cptr->ssl.session);
+
+		/* this is only a precaution currently as the connection is deallocated
+		 * soon anyway and other code doesn't have a chance to touch it
+		 */
+		cptr->ssl.session = NULL;
+	}
+
 	/* close the fd */
 	mowgli_pollable_destroy(base_eventloop, cptr->pollable);
 
@@ -481,6 +492,12 @@ connection_t *connection_open_tcp_ssl(char *host, char *vhost, unsigned int port
 	freeaddrinfo(addr);
 
 	cptr = connection_add(buf, s, CF_CONNECTING, read_handler, write_handler);
+
+	if (sslhandlers)
+	{
+		cptr->ssl.session = ssl_session_init_client(cptr->fd);
+		memcpy(&cptr->ssl.handlers, sslhandlers, sizeof(connection_ssl_handlers_t));
+	}
 
 	return cptr;
 }

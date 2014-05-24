@@ -13,4 +13,12 @@
 #define ATHEME_USE_OPENSSL
 #endif
 
+#ifdef ATHEME_USE_OPENSSL
+typedef SSL* ssl_session_t;
+#else
+typedef void* ssl_session_t;
+#endif
+
 E void ssl_init();
+E ssl_session_t ssl_session_init_client(int fd);
+E void ssl_session_deinit(ssl_session_t session);

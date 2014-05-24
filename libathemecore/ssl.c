@@ -39,3 +39,29 @@ void ssl_init()
 	SSL_CTX_set_options(context, SSL_OP_NO_SSLv2);
 #endif
 }
+
+ssl_session_t ssl_session_init_client(int fd)
+{
+	ssl_session_t session = NULL;
+
+#ifdef ATHEME_USE_OPENSSL
+	session = SSL_new(context);
+	SSL_set_fd(session, fd);
+#else
+	soft_assert(0);
+#endif
+
+	return session;
+}
+
+void ssl_session_deinit(ssl_session_t session)
+{
+	return_if_fail(session != NULL);
+
+#ifdef ATHEME_USE_OPENSSL
+	SSL_shutdown(session);
+	SSL_free(session);
+#else
+	soft_assert(0);
+#endif
+}
