@@ -280,11 +280,17 @@ static void charybdis_notice_channel_sts(user_t *from, channel_t *target, const 
 	sts(":%s NOTICE %s :%s", from ? CLIENT_NAME(from) : ME, target->name, text);
 }
 
+static void charybdis_sasl_mechlist_sts(const char *mechlist)
+{
+	sts(":%s ENCAP * SASLMECHLIST :%s", ME, mechlist);
+}
+
 void _modinit(module_t * m)
 {
 	MODULE_TRY_REQUEST_DEPENDENCY(m, "protocol/ts6-generic");
 
 	notice_channel_sts = &charybdis_notice_channel_sts;
+	sasl_mechlist_sts = &charybdis_sasl_mechlist_sts;
 
 	next_matching_ban = &charybdis_next_matching_ban;
 	is_valid_host = &charybdis_is_valid_host;
