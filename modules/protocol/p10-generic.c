@@ -829,6 +829,13 @@ static void m_kick(sourceinfo_t *si, int parc, char *parv[])
 		return;
 	}
 
+	/* P10 has kick acks; send back a PART when our client gets kicked.
+	 * This must be before chanuser_delete() as that may destroy the
+	 * channel object.
+	 */
+	if (is_internal_client(u))
+		sts("%s L %s", u->uid, c->name);
+
 	chanuser_delete(c, u);
 
 	/* if they kicked us, let's rejoin */
